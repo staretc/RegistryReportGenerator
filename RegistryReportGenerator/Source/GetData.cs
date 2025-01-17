@@ -36,10 +36,13 @@ namespace Source
             // ссылка на скачивание xlsx
             var url = source + (source.IndexOf("?") >= 0 ? "&" : "?") + "export=list";
             // место назначения файла
-            var destinationPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "ExportedRegister.xlsx");
+            var destinationPath = Path.Combine(Environment.CurrentDirectory, "..", "ExportedRegister.xlsx");
 
             // скачиваем файл
             DownloadXlsx(url, destinationPath).GetAwaiter().GetResult();
+
+            // отправляем уведомление об успешном скачивании файла
+            Console.WriteLine("Файл xlsx успешно получен!");
 
             return new XLWorkbook(destinationPath);
         }

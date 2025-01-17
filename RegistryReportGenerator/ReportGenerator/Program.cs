@@ -11,17 +11,17 @@ namespace ReportGenerator
     {
         static void Main(string[] args)
         {
-            //int[] splittedDate = args[0].Split('.').Select(x => int.Parse(x)).ToArray();
-            //DateTime beginningDate = new DateTime(splittedDate[2], splittedDate[1], splittedDate[0]);
-
-            //var process = new ProcessGenerator();
-            //// дата начала, источник, выходной файл
-            //process.Start(beginningDate, args[1], args[2]);
+            int[] splittedDate = args[0].Split('.').Select(x => int.Parse(x)).ToArray();
+            DateTime beginningDate = new DateTime(splittedDate[2], splittedDate[1], splittedDate[0]);
 
             var process = new ProcessGenerator();
-            process.Start(new DateTime(2024, 12, 28),
-                          "https://reestr.digital.gov.ru/reestr/",
-                          "C:\\Users\\shtoretc\\Downloads\\result.txt");
+            // дата начала, источник, выходной файл
+            process.Start(beginningDate, args[1], args[2]);
+
+            //var process = new ProcessGenerator();
+            //process.Start(new DateTime(2019, 12, 28),
+            //              "https://reestr.digital.gov.ru/reestr/",
+            //              "C:\\Users\\89201\\Downloads\\result.txt");
         }
     }
 }

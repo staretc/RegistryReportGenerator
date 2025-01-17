@@ -44,6 +44,10 @@ namespace Process
                 // если по источнику получили файл xlsx
                 if (_workbook != null)
                 {
+                    // Отправляем уведомление об успешном открытии файла и начале работы с данными
+                    Console.WriteLine("Файл xlsx успешно открыт!");
+                    Console.WriteLine("Обработка данных . . .");
+
                     // ищем подходящие записи и сохраняем в _report
                     var converter = new Converter(_workbook.Worksheet("Данные"));
                     _report = converter.GenerateReport(beginningDate);
@@ -95,7 +99,8 @@ namespace Process
         private bool IsValidOutputPath(string path)
         {
             // Путь не должен содержать недопустимые символы, должен быть абсолютьным и по данному пути должен существовать файл с разрешением xlsx
-            return path.IndexOfAny(Path.GetInvalidPathChars()) == -1;
+            return path.IndexOfAny(Path.GetInvalidPathChars()) == -1 &&
+                   Directory.Exists(Path.GetDirectoryName(path));
         }
     }
 }
