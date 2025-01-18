@@ -13,6 +13,6 @@
 
 Примеры команд для использования:  
 С ссылкой на реестр:  
-> RegistryReportGenerator.exe "01.01.2020" "https://reestr.digital.gov.ru/reestr/" "path/to/outputFile.txt"  
+`RegistryReportGenerator.exe "01.01.2020" "https://reestr.digital.gov.ru/reestr/" "path/to/outputFile.txt"`  
 С путём к файлу на устройстве:  
-> RegistryReportGenerator.exe "01.01.2020" "path/to/inputFile.txt" "path/to/outputFile.txt"  
+`RegistryReportGenerator.exe "01.01.2020" "path/to/inputFile.txt" "path/to/outputFile.txt"`  
