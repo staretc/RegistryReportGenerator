@@ -38,12 +38,6 @@ namespace Parser
             string eventType;
             while ((currentWriteDate = _worksheet.Cell($"S{currentLine}").GetDateTime()) >= beginningDate)
             {
-                // проверка, дошли ли до конца листа
-                if (IsSheetEnded(currentLine))
-                {
-                    break;
-                }
-
                 eventType = "Включение в реестр";
                 // если ячейка с датой исключения из реестра непустая, значит запись об исключении
                 if (IsExcluded(currentLine))
@@ -57,6 +51,12 @@ namespace Parser
                                              currentWriteDate,
                                              eventType));
                 currentLine++;
+
+                // проверка, дошли ли до конца листа
+                if (IsSheetEnded(currentLine))
+                {
+                    break;
+                }
             }
 
             return report;

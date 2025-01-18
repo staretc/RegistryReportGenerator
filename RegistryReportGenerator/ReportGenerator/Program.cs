@@ -11,17 +11,27 @@ namespace ReportGenerator
     {
         static void Main(string[] args)
         {
-            int[] splittedDate = args[0].Split('.').Select(x => int.Parse(x)).ToArray();
-            DateTime beginningDate = new DateTime(splittedDate[2], splittedDate[1], splittedDate[0]);
+            try
+            {
+                int[] splittedDate = args[0].Split('.').Select(x => int.Parse(x)).ToArray();
+                DateTime beginningDate = new DateTime(splittedDate[2], splittedDate[1], splittedDate[0]);
 
-            var process = new ProcessGenerator();
-            // дата начала, источник, выходной файл
-            process.Start(beginningDate, args[1], args[2]);
-
-            //var process = new ProcessGenerator();
-            //process.Start(new DateTime(2019, 12, 28),
-            //              "https://reestr.digital.gov.ru/reestr/",
-            //              "C:\\Users\\89201\\Downloads\\result.txt");
+                var process = new ProcessGenerator();
+                // дата начала, источник, выходной файл
+                process.Start(beginningDate, args[1], args[2]);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                Console.WriteLine("Ошибка: неверно указана дата");
+            }
+            catch (IndexOutOfRangeException)
+            {
+                Console.WriteLine("Ошибка: неверно указана дата");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
     }
 }

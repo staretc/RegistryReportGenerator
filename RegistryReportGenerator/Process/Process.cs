@@ -40,6 +40,12 @@ namespace Process
                 {
                     var dataCollecor = new GetDataFromFile();
                     _workbook = dataCollecor.GetContent(source);
+
+                    // в случае использования файла другим процессом
+                    if (_workbook == null)
+                    {
+                        return;
+                    }
                 }
                 // если по источнику получили файл xlsx
                 if (_workbook != null)

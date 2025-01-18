@@ -39,7 +39,13 @@ namespace Source
             var destinationPath = Path.Combine(Environment.CurrentDirectory, "..", "ExportedRegister.xlsx");
 
             // скачиваем файл
-            DownloadXlsx(url, destinationPath).GetAwaiter().GetResult();
+            var downloadTask = DownloadXlsx(url, destinationPath).GetAwaiter().GetResult();
+
+            // в случае неудачной попытки скачивания возвращаем 
+            if (!downloadTask)
+            {
+                return null;
+            }
 
             // отправляем уведомление об успешном скачивании файла
             Console.WriteLine("Файл xlsx успешно получен!");
@@ -52,19 +58,27 @@ namespace Source
         /// <param name="url">Ссылка-источник</param>
         /// <param name="destinationPath">Путь назначения файла</param>
         /// <returns></returns>
-        private async Task DownloadXlsx(string url, string destinationPath)
+        private async Task<bool> DownloadXlsx(string url, string destinationPath)
         {
-            using (var client = new HttpClient())
+            try
             {
-                // Скачиваем файл
-                var response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-
-                // Сохраняем файл на диск
-                using (var fileStream = new FileStream(destinationPath, FileMode.Create))
+                using (var client = new HttpClient())
                 {
-                    await response.Content.CopyToAsync(fileStream);
+                    // Скачиваем файл
+                    var response = await client.GetAsync(url);
+                    response.EnsureSuccessStatusCode();
+
+                    // Сохраняем файл на диск
+                    using (var fileStream = new FileStream(destinationPath, FileMode.Create))
+                    {
+                        await response.Content.CopyToAsync(fileStream);
+                    }
+                    return true;
                 }
+            }
+            catch (HttpRequestException)
+            {
+                return false;
             }
         }
     }
@@ -80,7 +94,16 @@ namespace Source
         /// <returns>Полученный файл XLSX</returns>
         public XLWorkbook GetContent(string source)
         {
-            return new XLWorkbook(source);
+            try
+            {
+                return new XLWorkbook(source);
+            }
+            catch(IOException)
+            {
+                Console.WriteLine("Файл уже используется другим процессом");
+                return null;
+            }
+            
         }
     }
 }
