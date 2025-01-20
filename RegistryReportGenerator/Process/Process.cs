@@ -104,9 +104,14 @@ namespace Process
         /// <returns>Результат проверки на валидность</returns>
         private bool IsValidOutputPath(string path)
         {
-            // Путь не должен содержать недопустимые символы, должен быть абсолютьным и по данному пути должен существовать файл с разрешением xlsx
-            return path.IndexOfAny(Path.GetInvalidPathChars()) == -1 &&
-                   Directory.Exists(Path.GetDirectoryName(path));
+            var directory = Path.GetDirectoryName(path);
+            // Путь не должен содержать недопустимые символы и по данному пути должна существовать директория (если путь содержит директорию)
+            if (!string.IsNullOrEmpty(directory))
+            {
+                return path.IndexOfAny(Path.GetInvalidPathChars()) == -1 &&
+                       Directory.Exists(directory);
+            }
+            return path.IndexOfAny(Path.GetInvalidPathChars()) == -1;
         }
     }
 }

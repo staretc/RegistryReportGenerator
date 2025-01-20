@@ -36,29 +36,52 @@ namespace Parser
             DateTime currentWriteDate;
             int currentLine = 6;
             string eventType;
-            while ((currentWriteDate = _worksheet.Cell($"S{currentLine}").GetDateTime()) >= beginningDate)
+            string stateRegistrationNumber;
+
+            // пока не дошли до конца
+            while (!IsSheetEnded(++currentLine))
             {
-                eventType = "Включение в реестр";
-                // если ячейка с датой исключения из реестра непустая, значит запись об исключении
+                stateRegistrationNumber = "-1";
+                // если есть гос. регистрация, берём информацию о ней
+                if (IsStateRegistered(currentLine))
+                {
+                    stateRegistrationNumber = _worksheet.Cell($"W{currentLine}").Value.ToString();
+                }
+
+                // если ячейка с датой исключения из реестра непустая, значит добавляем запись об исключении
                 if (IsExcluded(currentLine))
                 {
-                    currentWriteDate = _worksheet.Cell($"F{currentLine}").GetDateTime();
                     eventType = "Исключение из реестра";
+                    currentWriteDate = _worksheet.Cell($"F{currentLine}").GetDateTime();
+                    // если дата записи попадает в промежуток отбора, заносим запись
+                    if (currentWriteDate >= beginningDate)
+                    {
+                        report.Add(new RegisrtyWrite(_worksheet.Cell($"A{currentLine}").Value.ToString(),
+                                                     _worksheet.Cell($"B{currentLine}").Value.ToString(),
+                                                     currentWriteDate,
+                                                     eventType,
+                                                     _worksheet.Cell($"U{currentLine}").Value.ToString(),
+                                                     stateRegistrationNumber));
+                    }
                 }
-                // добавляем новую запись
-                report.Add(new RegisrtyWrite(_worksheet.Cell($"A{currentLine}").Value.ToString(),
-                                             _worksheet.Cell($"B{currentLine}").Value.ToString(),
-                                             currentWriteDate,
-                                             eventType));
-                currentLine++;
 
-                // проверка, дошли ли до конца листа
-                if (IsSheetEnded(currentLine))
+                // добавляем запись о включении в реестр
+                eventType = "Включение в реестр";
+                currentWriteDate = _worksheet.Cell($"S{currentLine}").GetDateTime();
+                // если дата записи попадает в промежуток отбора, заносим запись
+                if (currentWriteDate >= beginningDate)
                 {
-                    break;
+                    report.Add(new RegisrtyWrite(_worksheet.Cell($"A{currentLine}").Value.ToString(),
+                                                 _worksheet.Cell($"B{currentLine}").Value.ToString(),
+                                                 currentWriteDate,
+                                                 eventType,
+                                                 _worksheet.Cell($"U{currentLine}").Value.ToString(),
+                                                 stateRegistrationNumber));
                 }
             }
 
+            // возвращаем отсортированный по датам отчёт
+            report.Sort();
             return report;
         }
         /// <summary>
@@ -78,8 +101,17 @@ namespace Parser
         /// <returns>Дошли ли до конца</returns>
         private bool IsSheetEnded(int currentLine)
         {
-            // прове
             return _worksheet.Cell($"A{currentLine}").Value.ToString() == string.Empty;
+        }
+        /// <summary>
+        /// Проверка, есть ли гос. регистрация текущей записи
+        /// </summary>
+        /// <param name="currentLine">Текущая проверяемая строка</param>
+        /// <returns>Есть ли гос. регистрация</returns>
+        private bool IsStateRegistered(int currentLine)
+        {
+            // номер гос. регистрации должен быть записан в столбце W
+            return _worksheet.Cell($"W{currentLine}").Value.ToString() != string.Empty;
         }
     }
 }

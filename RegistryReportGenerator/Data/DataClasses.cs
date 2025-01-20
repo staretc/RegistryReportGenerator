@@ -9,13 +9,15 @@ namespace Data
     /// <summary>
     /// Класс, хранящий необходимую информацию из записи реестра
     /// </summary>
-    public class RegisrtyWrite
+    public class RegisrtyWrite : IComparable<RegisrtyWrite>
     {
         #region Fields
         private string _id;
         private string _softwareName;
         private DateTime _eventDate;
         private string _eventType;
+        private string _applicationNumber;
+        private string _stateRegistrationNumber;
         #endregion
 
         #region Properties
@@ -42,6 +44,16 @@ namespace Data
             get => _eventType;
             set => _eventType = value;
         }
+        public string ApplicationNumber
+        {
+            get => _applicationNumber;
+            set => _applicationNumber = value;
+        }
+        public string StateRegistrationNumber
+        {
+            get => _stateRegistrationNumber;
+            set => _stateRegistrationNumber = value;
+        }
         #endregion
 
         #region Constructors
@@ -52,12 +64,16 @@ namespace Data
         /// <param name="softwareName">Наименование ПО</param>
         /// <param name="date">Дата регистрации</param>
         /// <param name="eventType">Тип события</param>
-        public RegisrtyWrite(string id, string softwareName, DateTime eventDate, string eventType)
+        /// <param name="applicationNumber">Номер заявления</param>
+        /// <param name="stateRegistrationNumber">Номер гос. регистрации</param>
+        public RegisrtyWrite(string id, string softwareName, DateTime eventDate, string eventType, string applicationNumber, string stateRegistrationNumber)
         {
             Id = id;
             SofwareName = softwareName;
             EventDate = eventDate;
             EventType = eventType;
+            ApplicationNumber = applicationNumber;
+            StateRegistrationNumber = stateRegistrationNumber;
         }
         #endregion
 
@@ -71,13 +87,22 @@ namespace Data
         /// <para>Наименование ПО</para>
         /// <para>Дата регистрации</para>
         /// <para>Тип События</para>
+        /// <para>Номер заявления</para>
+        /// <para>Номер гос. регистрации (при наличии)</para>
         /// </returns>
         public override string ToString()
         {
-            return $"Номер реестровой записи: {Id}\n" +
-                   $"Наименование ПО: {SofwareName}\n" +
-                   $"Дата регистрации: {GetEventDateToString("dd.MM.yy")}\n" +
-                   $"Тип события: {EventType}";
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append($"Номер реестровой записи: {Id}\n" +
+                                 $"Наименование ПО: {SofwareName}\n" +
+                                 $"Дата регистрации: {GetEventDateToString("dd.MM.yy")}\n" +
+                                 $"Тип события: {EventType}\n" +
+                                 $"Номер заявления: {ApplicationNumber}");
+            if (StateRegistrationNumber != "-1")
+            {
+                stringBuilder.Append($"\nНомер гос. Регистрации: {StateRegistrationNumber}");
+            }
+            return stringBuilder.ToString();
         }
         /// <summary>
         /// Устанавливает дату в EventDate из входящей строки
@@ -96,6 +121,19 @@ namespace Data
         public string GetEventDateToString(string format)
         {
             return EventDate.ToString(format);
+        }
+        /// <summary>
+        /// Сравнение двух записей по датам записей (по Id записей в случае одинаковых дат)
+        /// </summary>
+        /// <param name="other">Запись, с которой ведётся сравнение</param>
+        /// <returns>Результат сравнения</returns>
+        public int CompareTo(RegisrtyWrite other)
+        {
+            if (EventDate.Equals(other.EventDate))
+            {
+                return other.Id.CompareTo(Id);
+            }
+            return other.EventDate.CompareTo(EventDate);
         }
         #endregion
     }
@@ -138,5 +176,6 @@ namespace Data
         /// </summary>
         /// <param name="regisrtyWrite">Новая запись</param>
         public void Add(RegisrtyWrite regisrtyWrite) => RegisrtyWrites.Add(regisrtyWrite);
+        public void Sort() => RegisrtyWrites.Sort();
     }
 }
