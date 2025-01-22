@@ -36,47 +36,59 @@ namespace Parser
             DateTime currentWriteDate;
             int currentLine = 6;
             string eventType;
-            string stateRegistrationNumber;
+            string id;
+            string softwareName;
 
             // пока не дошли до конца
             while (!IsSheetEnded(++currentLine))
             {
-                stateRegistrationNumber = "-1";
-                // если есть гос. регистрация, берём информацию о ней
+                softwareName = _worksheet.Cell($"B{currentLine}").Value.ToString();
+
+                // если есть гос. регистрация, добавляем запись о ней
                 if (IsStateRegistered(currentLine))
                 {
-                    stateRegistrationNumber = _worksheet.Cell($"W{currentLine}").Value.ToString();
+                    currentWriteDate = DateTime.Parse(_worksheet.Cell($"X{currentLine}").Value.ToString());
+                    // если дата записи попадает в промежуток отбора, заносим запись
+                    if (currentWriteDate >= beginningDate)
+                    {
+                        id = _worksheet.Cell($"W{currentLine}").Value.ToString();
+                        eventType = "Гос. регистрация";
+                        report.Add(new RegisrtyWrite(id, softwareName, currentWriteDate, eventType));
+                    }
                 }
 
                 // если ячейка с датой исключения из реестра непустая, значит добавляем запись об исключении
                 if (IsExcluded(currentLine))
                 {
-                    eventType = "Исключение из реестра";
                     currentWriteDate = _worksheet.Cell($"F{currentLine}").GetDateTime();
                     // если дата записи попадает в промежуток отбора, заносим запись
                     if (currentWriteDate >= beginningDate)
                     {
-                        report.Add(new RegisrtyWrite(_worksheet.Cell($"A{currentLine}").Value.ToString(),
-                                                     _worksheet.Cell($"B{currentLine}").Value.ToString(),
-                                                     currentWriteDate,
-                                                     eventType,
-                                                     _worksheet.Cell($"U{currentLine}").Value.ToString(),
-                                                     stateRegistrationNumber));
+                        id = _worksheet.Cell($"A{currentLine}").Value.ToString();
+                        eventType = "Исключение из реестра";
+                        report.Add(new RegisrtyWrite(id, softwareName, currentWriteDate, eventType));
                     }
                 }
 
                 // добавляем запись о включении в реестр
-                eventType = "Включение в реестр";
+
                 currentWriteDate = _worksheet.Cell($"S{currentLine}").GetDateTime();
                 // если дата записи попадает в промежуток отбора, заносим запись
                 if (currentWriteDate >= beginningDate)
                 {
-                    report.Add(new RegisrtyWrite(_worksheet.Cell($"A{currentLine}").Value.ToString(),
-                                                 _worksheet.Cell($"B{currentLine}").Value.ToString(),
-                                                 currentWriteDate,
-                                                 eventType,
-                                                 _worksheet.Cell($"U{currentLine}").Value.ToString(),
-                                                 stateRegistrationNumber));
+                    id = _worksheet.Cell($"A{currentLine}").Value.ToString();
+                    eventType = "Включение в реестр";
+                    report.Add(new RegisrtyWrite(id, softwareName, currentWriteDate, eventType));
+                }
+
+                // добавляем запись о регистрации заявления
+                currentWriteDate = _worksheet.Cell($"S{currentLine}").GetDateTime();
+                // если дата записи попадает в промежуток отбора, заносим запись
+                if (currentWriteDate >= beginningDate)
+                {
+                    id = _worksheet.Cell($"U{currentLine}").Value.ToString();
+                    eventType = "Регистрация заявления";
+                    report.Add(new RegisrtyWrite(id, softwareName, currentWriteDate, eventType));
                 }
             }
 
@@ -110,8 +122,8 @@ namespace Parser
         /// <returns>Есть ли гос. регистрация</returns>
         private bool IsStateRegistered(int currentLine)
         {
-            // номер гос. регистрации должен быть записан в столбце W
-            return _worksheet.Cell($"W{currentLine}").Value.ToString() != string.Empty;
+            // дата гос. регистрации должна быть записана в столбце X
+            return _worksheet.Cell($"X{currentLine}").Value.ToString() != string.Empty;
         }
     }
 }

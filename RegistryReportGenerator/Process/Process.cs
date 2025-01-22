@@ -66,7 +66,7 @@ namespace Process
                     return;
                 }
                 // если не получили xlsx из источника
-                Console.WriteLine("Введён некорректный источник.");
+                Console.WriteLine("Не удалось получить файл из источника.");
 
                 return;
             }

@@ -16,8 +16,6 @@ namespace Data
         private string _softwareName;
         private DateTime _eventDate;
         private string _eventType;
-        private string _applicationNumber;
-        private string _stateRegistrationNumber;
         #endregion
 
         #region Properties
@@ -44,16 +42,6 @@ namespace Data
             get => _eventType;
             set => _eventType = value;
         }
-        public string ApplicationNumber
-        {
-            get => _applicationNumber;
-            set => _applicationNumber = value;
-        }
-        public string StateRegistrationNumber
-        {
-            get => _stateRegistrationNumber;
-            set => _stateRegistrationNumber = value;
-        }
         #endregion
 
         #region Constructors
@@ -66,14 +54,12 @@ namespace Data
         /// <param name="eventType">Тип события</param>
         /// <param name="applicationNumber">Номер заявления</param>
         /// <param name="stateRegistrationNumber">Номер гос. регистрации</param>
-        public RegisrtyWrite(string id, string softwareName, DateTime eventDate, string eventType, string applicationNumber, string stateRegistrationNumber)
+        public RegisrtyWrite(string id, string softwareName, DateTime eventDate, string eventType)
         {
             Id = id;
             SofwareName = softwareName;
             EventDate = eventDate;
             EventType = eventType;
-            ApplicationNumber = applicationNumber;
-            StateRegistrationNumber = stateRegistrationNumber;
         }
         #endregion
 
@@ -93,15 +79,10 @@ namespace Data
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.Append($"Номер реестровой записи: {Id}\n" +
+            stringBuilder.Append($"Номер записи: {Id}\n" +
                                  $"Наименование ПО: {SofwareName}\n" +
-                                 $"Дата регистрации: {GetEventDateToString("dd.MM.yy")}\n" +
-                                 $"Тип события: {EventType}\n" +
-                                 $"Номер заявления: {ApplicationNumber}");
-            if (StateRegistrationNumber != "-1")
-            {
-                stringBuilder.Append($"\nНомер гос. Регистрации: {StateRegistrationNumber}");
-            }
+                                 $"Дата события: {GetEventDateToString("dd.MM.yy")}\n" +
+                                 $"Тип события: {EventType}\n");
             return stringBuilder.ToString();
         }
         /// <summary>
@@ -131,6 +112,10 @@ namespace Data
         {
             if (EventDate.Equals(other.EventDate))
             {
+                if (Id.Equals(other.Id))
+                {
+                    return other.EventType.CompareTo(other.EventType);
+                }
                 return other.Id.CompareTo(Id);
             }
             return other.EventDate.CompareTo(EventDate);

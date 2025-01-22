@@ -80,6 +80,10 @@ namespace Source
             {
                 return false;
             }
+            catch (IOException)
+            {
+                return false;
+            }
         }
     }
     /// <summary>
